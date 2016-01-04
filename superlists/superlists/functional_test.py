@@ -42,5 +42,7 @@ class NewVisitorTest(unittest.TestCase):
 
                 # Satisfied, she goes back to sleep.
 
+                self.fail('Finish the app!')
+                
 if __name__ == '__main__':
     unittest.main()
