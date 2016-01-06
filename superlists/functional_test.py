@@ -36,7 +36,7 @@ class NewVisitorTest(unittest.TestCase):
 
 
                 # She is invited to enter a to-do item straight away
-                self.create_inputbox_and_send_keys('1. Buy peacock feathers')
+                self.create_inputbox_and_send_keys('Buy peacock feathers')
 
                 inputbox = self.browser.find_element_by_id('id_new_item')
                 self.assertEqual(
@@ -58,7 +58,7 @@ class NewVisitorTest(unittest.TestCase):
                 # She enters 'Use peacock feathers to make fly'
                 # (Edith is very methodolical)
 
-                self.create_inputbox_and_send_keys('2. Use peacock feathers to make fly')
+                self.create_inputbox_and_send_keys('Use peacock feathers to make fly')
 
                 # The homepage updates again, and now shows both items on her lists
                 self.check_for_row_in_list_table('1. Buy peacock feathers')
