@@ -33,23 +33,32 @@ class NewListTest(TestCase):
             '/lists/new',
             data = {'item_text': 'A new list item'}
         )
-        self.assertRedirects(response,'/lists/the-only-list/')
+        new_list = List.objects.first()
+        self.assertRedirects(response,'/lists/%d/' % (new_list.id,))
 
 class ListViewTest(TestCase):
 
     def test_uses_list_templates(self):
-        response = self.client.get('/lists/the-only-list/')
+        new_list = List.objects.create()
+        #%d taking the id of new_list and change it into numbers
+        response = self.client.get('/lists/%d/' % (new_list.id,))
         self.assertTemplateUsed(response, 'list.html')
 
-    def test_displays_all_times(self):
+    def test_displays_only_items_for_list(self):
         new_list = List.objects.create()
         Item.objects.create(text = 'item 1' , list = new_list)
         Item.objects.create(text = 'item 2' , list = new_list)
 
-        response = self.client.get('/lists/the-only-list/')
+        other_list = List.objects.create()
+        Item.objects.create(text = 'item 1' , list = other_list)
+        Item.objects.create(text = 'item 2' , list = other_list)
+
+        response = self.client.get('/lists/%d/' % (new_list.id,))
 
         self.assertContains(response,'item 1')
         self.assertContains(response,'item 2')
+        self.assertNotContains(response,'other  item 1')
+        self.assertNotContains(response,'other item 2')
 
 class ItemAndListModelsTest(TestCase):
 
