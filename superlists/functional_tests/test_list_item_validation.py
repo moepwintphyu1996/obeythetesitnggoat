@@ -2,7 +2,7 @@ from unittest import skip
 from .base import TodoFunctionalTest
 
 class ItemValidationTest(TodoFunctionalTest):
-    @skip("Haven't implemented this.")
+    # @skip("Haven't implemented this.")
     def test_cannot_add_empty_list_item(self):
         #Edith goes to the home page, and accidentally tries to submit an empty list item.
         #She hits "Enter" on the empty input box.

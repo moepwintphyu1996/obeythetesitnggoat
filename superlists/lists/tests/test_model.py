@@ -1,11 +1,6 @@
-from django.core.urlresolvers import resolve
-from django.http import HttpRequest
-from django.template.loader import render_to_string
 from django.test import TestCase
-
+from django.core.exceptions import ValidationError
 from lists.models import Item, List
-from lists.views import home_page
-
 
 class ItemAndListModelsTest(TestCase):
 
@@ -36,3 +31,20 @@ class ItemAndListModelsTest(TestCase):
         self.assertEqual(second_saved_item.text, 'Item the second')
         self.assertEqual(first_saved_item.list, new_list)
         self.assertEqual(second_saved_item.list, new_list)
+
+    def test_cannot_save_empty_list_items(self):
+        new_list = List.objects.create()
+        item = Item(list= new_list,text = '')
+
+        ## Two ways to write this
+        # try:
+        #     item.save()
+        #     self.fail('The save should have raised an exception')
+        # except ValidationError:
+        #     pass
+
+        #Django way of doing it
+        with self.assertRaises(ValidationError):
+            #We need two lines
+            item.save()
+            item.full_clean()
