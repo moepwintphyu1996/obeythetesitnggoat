@@ -15,8 +15,8 @@ def new_list(request):
         new_list.delete()
         error = "You can't have an empty list item"
         return render(request,'home.html',{'error': error})
-
     return redirect('/lists/%d/' %(new_list.id,))
+
 
 def view_list(request, list_id):
     list_ = List.objects.get(id=list_id)
