@@ -130,6 +130,25 @@ class NewListTest(TestCase):
         response = self.client.get('/lists/%d/' % (current_list.id,))
         self.assertContains(response, 'input type = "checkbox"')
 
+    def test_POST_items_toggles_done(self):
+        #Create list and items
+        current_list = List.objects.create()
+        item1 = Item.objects.create(text = "Item 1", list = current_list)
+        item2 = Item.objects.create(text = "Item 2", list = current_list)
+        #POST data
+        response = self.client.post(
+            '/lists/%d/items/' % (current_list.id,),
+            data = {'mark_item_done': item1.id}
+        )
+        #- including toggle item
+
+        self.assertRedirects(response,'/lists/%d/' % (current_list.id,))
+
+        item1 = Item.objects.get(id = item1.id)
+        item2 = Item.objects.get(id = item2.id)
+        #Check item is updated
+        self.assertTrue(item1.is_done)
+
     def test_redirects_after_POST(self):
 
         response = self.client.post(

@@ -2,6 +2,7 @@ from .base import TodoFunctionalTest
 from selenium import webdriver
 
 class ToggleDoneTest(TodoFunctionalTest):
+
     def toggle_todo_done(self,todo_text):
         row = self.find_table_row(todo_text)
         row.find_element_by_tag_name('input').click()
