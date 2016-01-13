@@ -122,6 +122,14 @@ class NewListTest(TestCase):
         expected_error = escape("You can't have an empty list item")
         self.assertContains(response, expected_error)
 
+    def test_list_view_displays_checkbox(self):
+        current_list = List.objects.create()
+        Item.objects.create(text = "Item 1", list = current_list)
+        Item.objects.create(text = "Item 2", list = current_list)
+
+        response = self.client.get('/lists/%d/' % (current_list.id,))
+        self.assertContains(response, 'input type = "checkbox"')
+
     def test_redirects_after_POST(self):
 
         response = self.client.post(
