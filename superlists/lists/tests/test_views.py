@@ -22,6 +22,15 @@ class HomePageTest(TestCase):
 
         self.assertEqual(response.content.decode(), expected_html)
 
+    def test_home_page_has_todo_lists(self):
+        list1 = List.objects.create(name = "List 1")
+        list2 = List.objects.create(name = "List 2")
+        response = self.client.get('/')
+        context = response.context['todo_lists']
+        self.assertEqual(len(context),2)
+        self.assertEqual(context[0],list1)
+        self.assertEqual(context[1],list2)
+
 
 class ListViewTest(TestCase):
 
@@ -91,6 +100,24 @@ class ListViewTest(TestCase):
         )
         self.assertEqual(Item.objects.count(),0)
 
+    def test_redirects_after_POST(self):
+
+        response = self.client.post(
+            '/lists/new',
+            data={'item_text': 'A new list item'}
+        )
+
+        new_list = List.objects.first()
+        self.assertRedirects(response, '/lists/%d/' %(new_list.id,))
+
+    def test_edit_list_name(self):
+        current_list = List.objects.create()
+        self.client.post(
+            '/lists/%d/' % (current_list.id,),
+            data = {'list_name': 'New List'}
+        )
+        self.assertEqual(List.objects.first().name,'New List')
+
 class NewListTest(TestCase):
 
     def test_saving_a_POST_request(self):
@@ -130,6 +157,9 @@ class NewListTest(TestCase):
 
         response = self.client.get('/lists/%d/' % (current_list.id,))
         self.assertContains(response, 'input type = "checkbox"')
+
+
+class EditListTest(TestCase):
 
     def test_POST_items_toggles_done(self):
         #Create list and items
@@ -207,13 +237,3 @@ class NewListTest(TestCase):
         #Check item is updated
         self.assertFalse(item1.is_done)
         self.assertFalse(item2.is_done)
-
-    def test_redirects_after_POST(self):
-
-        response = self.client.post(
-            '/lists/new',
-            data={'item_text': 'A new list item'}
-        )
-
-        new_list = List.objects.first()
-        self.assertRedirects(response, '/lists/%d/' %(new_list.id,))
