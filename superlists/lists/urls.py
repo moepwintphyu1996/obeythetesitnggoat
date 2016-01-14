@@ -21,5 +21,5 @@ urlpatterns = [
     #(.+)= capture group
     #\d only catches digits
     url(r'^(\d+)/$',views.view_list,name = 'view_list'),
-    url(r'^(\d+)/items$', views.edit_list, name = 'edit_list')
+    url(r'^(\d+)/items/$', views.edit_list, name = 'edit_list'),
 ]

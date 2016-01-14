@@ -74,6 +74,7 @@ class ListViewTest(TestCase):
         self.assertNotContains(response, 'other item 1')
         self.assertNotContains(response, 'other item 2')
 
+
     def test_validation_errors_stay_on_list_page(self):
         current_list = List.objects.create()
         response = self.client.post('/lists/%d/' % (current_list.id),data = {'item_text': ''})
@@ -148,6 +149,64 @@ class NewListTest(TestCase):
         item2 = Item.objects.get(id = item2.id)
         #Check item is updated
         self.assertTrue(item1.is_done)
+
+    def test_POST_multiple_items_done(self):
+        current_list = List.objects.create()
+        item1 = Item.objects.create(text = "Item 1", list = current_list)
+        item2 = Item.objects.create(text = "Item 2", list = current_list)
+
+        response = self.client.post(
+            '/lists/%d/items/' % (current_list.id,),
+            data = {'mark_item_done': [item1.id,item2.id]}
+        )
+
+        item1 = Item.objects.get(id = item1.id)
+        item2 = Item.objects.get(id = item2.id)
+        #Check item is updated
+        self.assertTrue(item1.is_done)
+        self.assertTrue(item2.is_done)
+
+    def tets_POST_item_toggles_done(self):
+        current_list = List.objects.create()
+        item1 = Item.objects.create(
+            text = "Item 1",
+            list = current_list,
+            is_done = True
+        )
+
+        item2 = Item.objects.create(
+            text - "Item 2",
+            list = current_list,
+            is_done = False
+        )
+
+        response = self.client.post(
+            '/lists/%d/items/' % (current_list.id,),
+            data = {'mark_item_done': [item2.id]}
+        )
+
+        self.assertRedirects(response,'/lists/%d/' % (current_list.id,))
+        item1 = Item.objects.get(id = item1.id)
+        item2 = Item.objects.get(id = item2.id)
+        self.assertFalse(item1.is_done)
+        self.assertTrue(item2.is_done)
+
+
+    def test_POST_zero_items_done(self):
+        current_list = List.objects.create()
+        item1 = Item.objects.create(text = "Item 1", list = current_list)
+        item2 = Item.objects.create(text = "Item 2", list = current_list)
+
+        response = self.client.post(
+            '/lists/%d/items/' % (current_list.id,),
+            data = { }
+        )
+
+        item1 = Item.objects.get(id = item1.id)
+        item2 = Item.objects.get(id = item2.id)
+        #Check item is updated
+        self.assertFalse(item1.is_done)
+        self.assertFalse(item2.is_done)
 
     def test_redirects_after_POST(self):
 
