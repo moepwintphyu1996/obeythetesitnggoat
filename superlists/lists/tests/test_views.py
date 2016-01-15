@@ -31,6 +31,16 @@ class HomePageTest(TestCase):
         self.assertEqual(context[0],list1)
         self.assertEqual(context[1],list2)
 
+    def test_whether_item_is_deleted(self):
+        new_list = List.objects.create()
+        delete_item = Item.objects.create(text='itemey 1', list = new_list)
+        Item.objects.create(text='itemey 2', list = new_list)
+
+        response = self.client.post(
+        '/lists/%d/items/%d/delete' %(new_list.id,delete_item.id),
+        follow = True,)
+        self.assertContains(response, 'itemey 2')
+        self.assertNotContains(response, 'itemey 1')
 
 class ListViewTest(TestCase):
 
@@ -157,6 +167,15 @@ class NewListTest(TestCase):
 
         response = self.client.get('/lists/%d/' % (current_list.id,))
         self.assertContains(response, 'input type = "checkbox"')
+
+    def test_new_list_has_name_of_first_item(self):
+        response = self.client.post(
+            '/lists/new',
+            data = {'item_text': 'A new lists item'}
+        )
+
+        new_list = List.objects.first()
+        self.assertEqual(new_list.name, 'A new lists item')
 
 
 class EditListTest(TestCase):

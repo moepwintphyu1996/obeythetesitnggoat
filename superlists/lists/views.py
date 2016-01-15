@@ -6,8 +6,9 @@ def home_page(request):
     return render(request, 'home.html',{'todo_lists': List.objects.all()})
 
 def new_list(request):
-    new_list = List.objects.create()
-    item = Item.objects.create(text=request.POST['item_text'], list=new_list)
+    item_text = request.POST['item_text']
+    new_list = List.objects.create(name = item_text)
+    item = Item.objects.create(text= item_text, list=new_list)
     try:
         item.full_clean()
         item.save()
@@ -16,6 +17,11 @@ def new_list(request):
         error = "You can't have an empty list item"
         return render(request,'home.html',{'error': error})
     return redirect('/lists/%d/' %(new_list.id,))
+
+def delete_item(request, list_id, item_id):
+    Item.objects.get(id=item_id).delete()
+    list_ = List.objects.get(id = list_id)
+    return redirect('/lists/%d/' % (list_.id,))
 
 
 def view_list(request, list_id):

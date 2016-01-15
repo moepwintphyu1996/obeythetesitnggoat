@@ -16,6 +16,7 @@
               {% if item.is_done %}checked = "checked"{% endif %}
               />
           </td>
+          <td><a href="/lists/{{list.id}}/items/{{ item.id }}/delete">Delete</a></td>
           <td class = "content {% if item.is_done %}todo-done{% endif %}">
             {{ item.text }}
           </td>
